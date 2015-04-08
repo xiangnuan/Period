@@ -1,0 +1,47 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize" />
+
+    <LinearLayout
+        android:id="@+id/control"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:orientation="horizontal"
+        android:background="?attr/colorPrimaryDark"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:id="@+id/calendar"
+            android:text="日历"
+            style="@style/controlStyle" />
+
+        <TextView
+            android:id="@+id/tool"
+            android:text="工具"
+            style="@style/controlStyle" />
+
+        <TextView
+            android:id="@+id/setting"
+            android:text="设置"
+            style="@style/controlStyle" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_below="@id/toolbar"
+        android:layout_above="@id/control"
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</RelativeLayout>
+
+

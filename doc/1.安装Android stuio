@@ -1,0 +1,7 @@
+1.安装Android stuio
+2.安装Gradle
+3.导入Android stuio配置,打开Android stuio,File->import setting,然后选择这个setting.jar
+4.导入工程.File->new->import porject
+5.熟悉工程
+6.涉及的开源库
+http://jakewharton.github.io/butterknife/index.html

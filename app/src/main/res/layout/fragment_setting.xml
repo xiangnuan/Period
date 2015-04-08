@@ -1,0 +1,118 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.qinchu.app.fragment.SettingFragment">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dip"
+        android:background="@drawable/global_shadow_fade_bottom" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dip"
+        android:orientation="vertical"
+        android:background="@drawable/bg_card_setting">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/age_desc"
+                android:text="年龄"
+                style="@style/settingEditDesc" />
+
+            <EditText
+                android:id="@+id/age"
+                style="@style/settingEdit"
+                android:hint="填写年龄(岁)" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/height_desc"
+                android:text="身高"
+                style="@style/settingEditDesc" />
+
+            <EditText
+                android:id="@+id/height"
+                style="@style/settingEdit"
+                android:hint="填写身高(cm)" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/year_desc"
+                android:text="初潮年龄"
+                style="@style/settingEditDesc" />
+
+            <EditText
+                android:id="@+id/firstAge"
+                style="@style/settingEdit"
+                android:hint="初潮年龄" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/count_desc"
+                android:text="经期天数"
+                style="@style/settingEditDesc" />
+
+            <EditText
+                android:id="@+id/count"
+                style="@style/settingEdit"
+                android:hint="经期天数(天)" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/period_desc"
+                android:text="周期天数"
+                style="@style/settingEditDesc" />
+
+            <EditText
+                android:id="@+id/period"
+                style="@style/settingEdit"
+                android:hint="周期天数(天)" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/start_date"
+                android:text="开始日期"
+                style="@style/settingEditDesc" />
+
+            <TextView
+                android:id="@+id/startdate"
+                style="@style/settingEdit"
+                android:inputType="date"
+                android:hint="开始日期" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
