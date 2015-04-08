@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.qinchu.app.R;
+import com.qinchu.app.activity.MainActivity;
 import com.qinchu.app.base.BaseFragment;
+import com.qinchu.app.base.MessageToast;
+import com.qinchu.app.db.UserProxy;
+import com.qinchu.app.entity.User;
 import com.qinchu.app.proxy.SettingProxy;
 
 import java.text.SimpleDateFormat;
@@ -25,6 +28,7 @@ import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 
 /**
@@ -36,8 +40,6 @@ public class SettingFragment extends BaseFragment {
     EditText ageEditText;
     @InjectView(R.id.height)
     EditText heightEditText;
-    @InjectView(R.id.firstAge)
-    EditText firstAgeEditText;
     @InjectView(R.id.count)
     EditText countEditText;
     @InjectView(R.id.period)
@@ -68,10 +70,6 @@ public class SettingFragment extends BaseFragment {
         if (age != -1) {
             ageEditText.setText(String.valueOf(age));
         }
-        int firstAge = SettingProxy.getFirstAge();
-        if (firstAge != -1) {
-            firstAgeEditText.setText(String.valueOf(firstAge));
-        }
         int count = SettingProxy.getCount();
         if (count != -1) {
             countEditText.setText(String.valueOf(count));
@@ -95,6 +93,74 @@ public class SettingFragment extends BaseFragment {
         });
     }
 
+    @OnClick(R.id.save)
+    public void save() {
+        int uid = SettingProxy.getUid();
+        //TODO 登录的话需要修改的UID,但是这里只是一个用户就先写死了
+        boolean showMain = false;
+        if (uid == -1) {
+            //如果是第一次,那么保存完应该进入到MainFragment
+            showMain = true;
+            uid = 0x0329;
+        }
+
+        User user = new User();
+        user.setUid(uid);
+        user.setName("秦楚");
+        //password 一般是不可以直接存储明文的,常见的简单的都是一般简单的处理一下明文然后取明文的MD5值,这里随便写一下
+        user.setPassword(String.valueOf("秦楚".hashCode()));
+
+        try {
+
+            String errorMsg = null;
+
+            String age = ageEditText.getText().toString().trim();
+            if (!TextUtils.isEmpty(age)) {
+                user.setAge(Integer.valueOf(age));
+                SettingProxy.saveAge(Integer.valueOf(age));
+            }
+
+            String height = heightEditText.getText().toString().trim();
+            if (!TextUtils.isEmpty(height)) {
+                user.setHeight(Integer.valueOf(height));
+                SettingProxy.saveHeight(Integer.valueOf(height));
+            }
+            String count = countEditText.getText().toString().trim();
+            if (!TextUtils.isEmpty(count)) {
+                user.setCount(Integer.valueOf(count));
+                SettingProxy.saveCount(Integer.valueOf(count));
+            } else {
+                errorMsg = "请输入每次姨妈持续时间";
+            }
+            String period = periodEditText.getText().toString().trim();
+            if (!TextUtils.isEmpty(period)) {
+                user.setPeriod(Integer.valueOf(period));
+                SettingProxy.savePeriod(Integer.valueOf(period));
+            } else {
+                errorMsg = "请输入姨妈周期";
+            }
+            long startDate = SettingProxy.getStartDate();
+            if (startDate != -1L) {
+                user.setStartDate(String.valueOf(startDate));
+            } else {
+                errorMsg = "请输入上次姨妈开始时间";
+            }
+
+            if (errorMsg != null) {
+                MessageToast.show(errorMsg, MessageToast.Style.ALERT);
+                return;
+            }
+
+            UserProxy.saveUser(user);
+            SettingProxy.saveUid(user.getUid());
+
+            ((MainActivity) getActivity()).showControl(showMain);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -116,41 +182,6 @@ public class SettingFragment extends BaseFragment {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("com.qc.update.ui");
         LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(mDateReciver, intentFilter);
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        /**
-         * 如果setting界面隐藏了,那么就存储一次值
-         */
-        if (hidden) {
-            try {
-                String age = ageEditText.getText().toString().trim();
-                if (!TextUtils.isEmpty(age)) {
-                    SettingProxy.saveAge(Integer.valueOf(age));
-                }
-                String height = heightEditText.getText().toString().trim();
-                if (!TextUtils.isEmpty(height)) {
-                    SettingProxy.saveHeight(Integer.valueOf(height));
-                }
-                String firstAge = firstAgeEditText.getText().toString().trim();
-                if (!TextUtils.isEmpty(firstAge)) {
-                    SettingProxy.saveFirstAge(Integer.valueOf(firstAge));
-                }
-                String count = countEditText.getText().toString().trim();
-                if (!TextUtils.isEmpty(count)) {
-                    SettingProxy.saveCount(Integer.valueOf(count));
-                }
-                String period = periodEditText.getText().toString().trim();
-                if (!TextUtils.isEmpty(period)) {
-                    SettingProxy.savePeriod(Integer.valueOf(period));
-                }
-            } catch (Exception e) {
-
-            }
-        }
-        Log.e(getTagName(), "onHiddenChanged:" + hidden);
     }
 
     @Override

@@ -6,12 +6,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.qinchu.app.R;
+import com.qinchu.app.base.BaseActivity;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 
-public class BMIActivity extends ActionBarActivity {
+public class BMIActivity extends BaseActivity {
 
     @InjectView(R.id.toolbar)
     Toolbar mToolBar;

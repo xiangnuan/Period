@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -84,8 +83,9 @@ public class MainFragment extends BaseFragment {
         year_c = time.year;
         month_c = time.month + 1;
         jumpMonth = 0;
-
-        mFlipper.removeAllViews();
+        if (mFlipper.getChildCount() > 0) {
+            mFlipper.removeAllViews();
+        }
         mAdapter = new CalendarAdapter(this.getActivity(), jumpMonth, year_c, month_c);
         mFlipper.setInAnimation(AnimationUtils.loadAnimation(this.getActivity(), R.anim.none_animation));
         mFlipper.setOutAnimation(AnimationUtils.loadAnimation(this.getActivity(), R.anim.none_animation));
@@ -147,15 +147,6 @@ public class MainFragment extends BaseFragment {
 
     private void resetTitle(Day sysDay) {
         calendarTitle.setText(sysDay.toString());
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (!hidden) {
-            initFlipper();
-        }
-        Log.e(getTagName(), "onHiddenChanged:" + hidden);
     }
 
     private class CalendarGestureListener extends GestureDetector.SimpleOnGestureListener {

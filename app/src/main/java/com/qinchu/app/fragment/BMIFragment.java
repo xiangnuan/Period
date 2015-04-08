@@ -13,6 +13,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.qinchu.app.R;
+import com.qinchu.app.db.UserProxy;
+import com.qinchu.app.entity.User;
 import com.qinchu.app.proxy.SettingProxy;
 
 import butterknife.ButterKnife;
@@ -71,13 +73,11 @@ public class BMIFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        int height = SettingProxy.getHeight();
-        if (height != -1) {
-            heightEditText.setText(String.valueOf(height));
-        }
-        int weight = SettingProxy.getWeight();
-        if (weight != -1) {
-            weightEditText.setText(String.valueOf(weight));
+
+        User user = UserProxy.getUser(SettingProxy.getUid());
+        if (user != null) {
+            heightEditText.setText(String.valueOf(user.getHeight()));
+            weightEditText.setText(String.valueOf(user.getWeight()));
         }
         //这里用textwatch的话就不需要增加一个计算按钮了,用户体验比较好
         heightEditText.addTextChangedListener(new OnTextWatcher());
@@ -109,37 +109,42 @@ public class BMIFragment extends Fragment {
             descTextView.setVisibility(View.VISIBLE);
             bmiSeek.setVisibility(View.VISIBLE);
 
-            String weightString = weightEditText.getText().toString().trim();
-            int weight = -1;
-            if (!TextUtils.isEmpty(weightString)) {
-                weight = Integer.valueOf(weightString);
-            }
-            String heightString = heightEditText.getText().toString().trim();
-            int height = -1;
-            if (!TextUtils.isEmpty(heightString)) {
-                height = Integer.valueOf(heightString);
-            }
-            //体质指数（BMI）=体重（kg）÷身高^2（m）
-            float bmi = (float) weight / (float) Math.pow(((float) height / 100.0f), 2);
-            bmiSeek.setProgress(Float.valueOf(bmi).intValue());
-            String descValue = String.format("%.2f", bmi);
-            String desc = null;
-            //稍有标准判断不同,保证值在区间内
-            if (bmi < 18.5) {
-                desc = "偏瘦,其它疾病危险性增加";
-            } else if (bmi >= 18.5 && bmi < 24) {
-                desc = "正常";
-            } else if (bmi >= 24 && bmi < 28) {
-                desc = "偏胖,相关疾病发病危险性增加";
-            } else if (bmi >= 28 && bmi < 40) {
-                desc = "肥胖,相关疾病发病危险性中度增加";
-            } else if (bmi >= 40) {
-                desc = "极重度肥胖,相关疾病发病危险性非常严重增加";
-            }
-            if (desc != null) {
-                descTextView.setText(descValue + " : " + desc);
-            }
+            User user = UserProxy.getUser(SettingProxy.getUid());
+            if (user != null) {
+                String weightString = weightEditText.getText().toString().trim();
+                int weight = -1;
+                if (!TextUtils.isEmpty(weightString)) {
+                    weight = Integer.valueOf(weightString);
+                }
+                String heightString = heightEditText.getText().toString().trim();
+                int height = -1;
+                if (!TextUtils.isEmpty(heightString)) {
+                    height = Integer.valueOf(heightString);
+                }
+                user.setHeight(height);
+                user.setWeight(weight);
 
+                //体质指数（BMI）=体重（kg）÷身高^2（m）
+                float bmi = (float) weight / (float) Math.pow(((float) height / 100.0f), 2);
+                bmiSeek.setProgress(Float.valueOf(bmi).intValue());
+                String descValue = String.format("%.2f", bmi);
+                String desc = null;
+                //稍有标准判断不同,保证值在区间内
+                if (bmi < 18.5) {
+                    desc = "偏瘦,其它疾病危险性增加";
+                } else if (bmi >= 18.5 && bmi < 24) {
+                    desc = "正常";
+                } else if (bmi >= 24 && bmi < 28) {
+                    desc = "偏胖,相关疾病发病危险性增加";
+                } else if (bmi >= 28 && bmi < 40) {
+                    desc = "肥胖,相关疾病发病危险性中度增加";
+                } else if (bmi >= 40) {
+                    desc = "极重度肥胖,相关疾病发病危险性非常严重增加";
+                }
+                if (desc != null) {
+                    descTextView.setText(descValue + " : " + desc);
+                }
+            }
         } catch (Exception e) {
             descTextView.setVisibility(View.INVISIBLE);
             bmiSeek.setVisibility(View.INVISIBLE);

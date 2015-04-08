@@ -4,23 +4,26 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
 import com.qinchu.app.R;
-import com.qinchu.app.base.BaseFragment;
+import com.qinchu.app.base.BaseActivity;
+import com.qinchu.app.base.MessageToast;
+import com.qinchu.app.db.UserProxy;
+import com.qinchu.app.entity.User;
 import com.qinchu.app.fragment.AnalyseFragment;
 import com.qinchu.app.fragment.MainFragment;
 import com.qinchu.app.fragment.SettingFragment;
+import com.qinchu.app.proxy.SettingProxy;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends BaseActivity {
 
 
     private static final String MAIN_TAG = "tag-main";
@@ -33,6 +36,8 @@ public class MainActivity extends ActionBarActivity {
 
     @InjectView(R.id.toolbar)
     Toolbar mToolBar;
+    @InjectView(R.id.control)
+    View control;
 
     private boolean comfirmExit = false;
     private Handler mHandler = new Handler();
@@ -58,7 +63,21 @@ public class MainActivity extends ActionBarActivity {
         mToolBar.setTitleTextColor(Color.WHITE);
         mToolBar.setNavigationIcon(R.mipmap.ic_launcher);
 
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mainFragment, MAIN_TAG).commit();
+        User user = UserProxy.getUser(SettingProxy.getUid());
+        if (user == null) {
+            MessageToast.show("请输入你的用户信息", MessageToast.Style.ALERT);
+            control.setVisibility(View.GONE);
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, settingFragment, SETTING_TAG).commit();
+        }else{
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mainFragment, MAIN_TAG).commit();
+        }
+    }
+
+    public void showControl(boolean show) {
+        if (show) {
+            control.setVisibility(View.VISIBLE);
+            showFragment(mainFragment, MAIN_TAG);
+        }
     }
 
     @OnClick({R.id.calendar, R.id.tool, R.id.setting})
@@ -82,25 +101,15 @@ public class MainActivity extends ActionBarActivity {
                 break;
         }
 
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
-        if (fragment != null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .hide(mainFragment)
-                    .hide(settingFragment)
-                    .hide(analyseFragment)
-                    .show(chooseFragment)
-                    .commit();
-        } else {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .hide(mainFragment)
-                    .hide(settingFragment)
-                    .hide(analyseFragment)
-                    .add(R.id.fragment_container, chooseFragment, tag)
-                    .show(chooseFragment)
-                    .commit();
-        }
+        showFragment(chooseFragment, tag);
+    }
+
+    private void showFragment(Fragment chooseFragment, String tag) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, chooseFragment, tag)
+                .show(chooseFragment)
+                .commit();
     }
 
     @Override

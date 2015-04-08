@@ -3,13 +3,9 @@ package com.qinchu.app.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.format.Time;
 
 import com.orhanobut.logger.Logger;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.qinchu.app.entity.User;
 
 
 /**
@@ -27,7 +23,8 @@ public final class UserProxy {
                     "'height' integer," +
                     "'weight' integer," +
                     "'period' integer," +
-                    "'count' integer" +
+                    "'count' integer," +
+                    "'startDate' text" +
                     ");";
 
     public static void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -37,29 +34,27 @@ public final class UserProxy {
         }
     }
 
-    public static void insertWeather(JSONObject weatherResult) {
+    public static void saveUser(User user) {
         SQLiteDatabase db = DatabaseHelper.getDatabase();
         Cursor cursor = null;
         try {
-            String date = weatherResult.getString("date").replace("-", "");
             cursor =
-                    db.query(TABLENAME, new String[]{"date"}, "date = ?", new String[]{date}, null,
-                            null, null);
+                    db.query(TABLENAME, new String[]{"uid"}, "uid = ?", new String[]{String.valueOf(user.getUid())}, null, null, null);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("uid", user.getUid());
+            contentValues.put("password", user.getPassword());
+            contentValues.put("name", user.getName());
+            contentValues.put("age", user.getAge());
+            contentValues.put("height", user.getHeight());
+            contentValues.put("weight", user.getWeight());
+            contentValues.put("period", user.getPeriod());
+            contentValues.put("count", user.getCount());
+            contentValues.put("startDate", user.getStartDate());
+
             if (cursor.getCount() == 0) {
-                JSONObject result = weatherResult.getJSONArray("results").getJSONObject(0);
-                String currentCity = result.getString("currentCity");
-                String pm25 = result.getString("pm25");
-                JSONArray index = result.getJSONArray("index");
-                JSONArray weather_data = result.getJSONArray("weather_data");
-
-                ContentValues contentValues = new ContentValues();
-                contentValues.put("date", date);
-                contentValues.put("currentCity", currentCity);
-                contentValues.put("pm25", pm25);
-                contentValues.put("info", index.toString());
-                contentValues.put("weather_data", weather_data.getJSONObject(0).toString());
-
                 db.insert(TABLENAME, null, contentValues);
+            } else {
+                db.update(TABLENAME, contentValues, "uid = ?", new String[]{String.valueOf(user.getUid())});
             }
         } catch (Exception e) {
             Logger.d(e.getMessage());
@@ -71,43 +66,31 @@ public final class UserProxy {
 
     }
 
-    public static Weather getTodayWeather() {
-        Time time = new Time();
-        time.setToNow();
-        int month = time.month + 1;
-        String todayDate = String.valueOf(time.year)
-                + String.valueOf(month < 10 ? "0" + month : month)
-                + String.valueOf(time.monthDay < 10 ? "0" + time.monthDay : time.monthDay);
-        return getWeatherByDate(todayDate);
-    }
-
-    public static Weather getWeatherByDate(String dateParam) {
-        Weather weather;
+    public static User getUser(int uid) {
+        User user;
         SQLiteDatabase db = DatabaseHelper.getDatabase();
         Cursor cursor =
-                db.query(TABLENAME, new String[]{"date", "currentCity", "pm25", "info",
-                                "weather_data"}, "date = ?", new String[]{dateParam}, null,
+                db.query(TABLENAME, new String[]{"uid", "password", "name", "age", "height", "weight", "period", "count","startDate"}, "uid = ?", new String[]{String.valueOf(uid)}, null,
                         null, null);
         if (cursor.getCount() == 0) {
-            Logger.d("query todayDate:" + dateParam + "  is  0");
-            weather = null;
-            fetchWeatherContent(dateParam);
+            user = null;
         } else {
+            //切记这个moveToFirst不可以少,因为是要移动到第一条,否则在最后一条是没有内容的
             cursor.moveToFirst();
-            weather = new Weather();
-            weather.date = cursor.getString(0);
-            weather.currentCity = cursor.getString(1);
-            weather.pm25 = cursor.getString(2);
-            try {
-                weather.index = new JSONArray(cursor.getString(3));
-                weather.weather_data = new JSONObject(cursor.getString(4));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            user = new User();
+            user.setUid(cursor.getInt(0));
+            user.setPassword(cursor.getString(1));
+            user.setName(cursor.getString(2));
+            user.setAge(cursor.getInt(3));
+            user.setHeight(cursor.getInt(4));
+            user.setWeight(cursor.getInt(5));
+            user.setPeriod(cursor.getInt(6));
+            user.setCount(cursor.getInt(7));
+            user.setStartDate(cursor.getString(8));
         }
         if (!cursor.isClosed()) {
             cursor.close();
         }
-        return weather;
+        return user;
     }
 }

@@ -11,6 +11,7 @@ import com.qinchu.app.base.MainApplication;
 public class SettingProxy {
 
     private static final String SETTINGNAME = "qc-setting";
+    private static final String UID = "qc-uid";
     private static final String AGE = "qc-age";
     private static final String HEIGHT = "qc-height";
     private static final String FIRSTAGE = "qc-first-age";
@@ -37,6 +38,14 @@ public class SettingProxy {
         SharedPreferences.Editor edit = getSettingPreferences().edit();
         edit.putInt(key, value);
         edit.apply();
+    }
+
+    public static int getUid() {
+        return getSettingPreferences().getInt(UID, -1);
+    }
+
+    public static void saveUid(int uid) {
+        save(UID, uid);
     }
 
     public static int getAge() {
