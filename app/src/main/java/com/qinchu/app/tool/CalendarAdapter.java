@@ -122,7 +122,7 @@ public class CalendarAdapter extends BaseAdapter {
             //今天
             holder.dayTV.setTextColor(sysDay.equals(itemDay) ? Color.RED : normalDayColor);
         } else {
-            holder.dayTV.setTextColor(isInPeriod ? Color.WHITE : otherDayColor);
+            holder.dayTV.setTextColor(otherDayColor);
         }
 
         return convertView;
@@ -177,6 +177,10 @@ public class CalendarAdapter extends BaseAdapter {
      */
     public Day getSysDay() {
         return sysDay;
+    }
+
+    public Day getShowMonth() {
+        return showDay;
     }
 
     static class ViewHolder {

@@ -18,6 +18,8 @@ import com.qinchu.app.fragment.MainFragment;
 import com.qinchu.app.fragment.SettingFragment;
 import com.qinchu.app.proxy.SettingProxy;
 
+import java.io.File;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -71,6 +73,7 @@ public class MainActivity extends BaseActivity {
         }else{
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mainFragment, MAIN_TAG).commit();
         }
+
     }
 
     public void showControl(boolean show) {

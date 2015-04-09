@@ -14,11 +14,13 @@
         <EditText
             android:id="@+id/height"
             style="@style/settingEdit"
+            android:maxLength="3"
             android:hint="填写身高(cm)" />
 
         <EditText
             android:id="@+id/weight"
             style="@style/settingEdit"
+            android:maxLength="3"
             android:hint="填写体重(kg)" />
 
     </LinearLayout>
@@ -28,48 +30,31 @@
         android:id="@+id/bmiSeek"
         android:layout_marginTop="?actionBarSize"
         android:layout_width="match_parent"
-        android:max="100"
+        android:max="50"
         android:layout_height="wrap_content" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:gravity="center"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:text="18.5"
+            android:text="BMI值"
             android:textColor="@color/black" />
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_weight="1"
+            android:id="@+id/value"
+            android:layout_width="wrap_content"
             android:gravity="center"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:text="24"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="28"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="36"
+            android:text="0.0"
             android:textColor="@color/black" />
 
     </LinearLayout>
