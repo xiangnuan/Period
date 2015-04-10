@@ -3,9 +3,7 @@ package com.qinchu.app.fragment;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.text.format.Time;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -24,6 +22,9 @@ import com.qinchu.app.R;
 import com.qinchu.app.base.BaseFragment;
 import com.qinchu.app.entity.Day;
 import com.qinchu.app.tool.CalendarAdapter;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -49,8 +50,6 @@ public class MainFragment extends BaseFragment {
     private GestureDetector gestureDetector = null;
     private CalendarAdapter mAdapter = null;
     private GridView gridView = null;
-    private int year_c = 0;
-    private int month_c = 0;
 
     public MainFragment() {
 
@@ -74,19 +73,11 @@ public class MainFragment extends BaseFragment {
         sensibility = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, displayMetrics);
         gestureDetector = new GestureDetector(this.getActivity(), new CalendarGestureListener());
 
-        initFlipper();
-    }
-
-    private void initFlipper() {
-        Time time = new Time();
-        time.setToNow();
-        year_c = time.year;
-        month_c = time.month + 1;
         jumpMonth = 0;
         if (mFlipper.getChildCount() > 0) {
             mFlipper.removeAllViews();
         }
-        mAdapter = new CalendarAdapter(this.getActivity(), jumpMonth, year_c, month_c);
+        mAdapter = new CalendarAdapter(this.getActivity(), jumpMonth);
         mFlipper.setInAnimation(AnimationUtils.loadAnimation(this.getActivity(), R.anim.none_animation));
         mFlipper.setOutAnimation(AnimationUtils.loadAnimation(this.getActivity(), R.anim.none_animation));
         addGridView();
@@ -95,13 +86,14 @@ public class MainFragment extends BaseFragment {
         resetTitle(mAdapter.getShowMonth());
     }
 
+
     /**
      * 移动到下一个月
      */
-    public void enterNextMonth(View v) {
+    public void enterNextMonth() {
         addGridView(); // 添加一个gridView
         jumpMonth++; // 下一个月
-        mAdapter = new CalendarAdapter(this.getActivity(), jumpMonth, year_c, month_c);
+        mAdapter = new CalendarAdapter(this.getActivity(), jumpMonth);
         gridView.setAdapter(mAdapter);
         mFlipper.addView(gridView, mFlipper.getChildCount());
         mFlipper.setInAnimation(AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_in_left));
@@ -114,10 +106,10 @@ public class MainFragment extends BaseFragment {
     /**
      * 移动到上一个月
      */
-    public void enterPrevMonth(View v) {
+    public void enterPrevMonth() {
         addGridView(); // 添加一个gridView
         jumpMonth--; // 上一个月
-        mAdapter = new CalendarAdapter(this.getActivity(), jumpMonth, year_c, month_c);
+        mAdapter = new CalendarAdapter(this.getActivity(), jumpMonth);
         gridView.setAdapter(mAdapter);
         mFlipper.setInAnimation(AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_in_right));
         mFlipper.setOutAnimation(AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_out_right));
@@ -156,11 +148,11 @@ public class MainFragment extends BaseFragment {
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             if (e1.getX() - e2.getX() > sensibility) {
                 // 像左滑动
-                enterNextMonth(null);
+                enterNextMonth();
                 return true;
             } else if (e1.getX() - e2.getX() < -sensibility) {
                 // 向右滑动
-                enterPrevMonth(null);
+                enterPrevMonth();
                 return true;
             }
             return false;

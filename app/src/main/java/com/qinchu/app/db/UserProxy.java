@@ -70,7 +70,7 @@ public final class UserProxy {
         User user;
         SQLiteDatabase db = DatabaseHelper.getDatabase();
         Cursor cursor =
-                db.query(TABLENAME, new String[]{"uid", "password", "name", "age", "height", "weight", "period", "count","startDate"}, "uid = ?", new String[]{String.valueOf(uid)}, null,
+                db.query(TABLENAME, new String[]{"uid", "password", "name", "age", "height", "weight", "period", "count", "startDate"}, "uid = ?", new String[]{String.valueOf(uid)}, null,
                         null, null);
         if (cursor.getCount() == 0) {
             user = null;
@@ -93,4 +93,10 @@ public final class UserProxy {
         }
         return user;
     }
+
+    public static void logout(int uid) {
+        SQLiteDatabase db = DatabaseHelper.getDatabase();
+        db.delete(TABLENAME, "uid = ? ", new String[]{String.valueOf(uid)});
+    }
+
 }

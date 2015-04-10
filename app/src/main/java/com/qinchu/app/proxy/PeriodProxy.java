@@ -1,7 +1,6 @@
 package com.qinchu.app.proxy;
 
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import com.orhanobut.logger.Logger;
 import com.qinchu.app.db.UserProxy;
@@ -28,8 +27,10 @@ public class PeriodProxy {
 
     public boolean isInPerid(int year, int month, int day) {
 
+        int count = mUser.getCount();
+
         //如果startDate小于0,则表明没有设置信息,没有意义,返回false
-        if (mUser.getStartDate() == null || mUser.getPeriod() <= 0 || mUser.getCount() <= 0) {
+        if (mUser.getStartDate() == null || mUser.getPeriod() <= 0 || count <= 0) {
             return false;
         }
 
@@ -40,18 +41,21 @@ public class PeriodProxy {
 
         Calendar calendarStart = Calendar.getInstance();
         calendarStart.setTimeInMillis(startDate);
-        Logger.e("isInPerid",
+
+        long target = calendarTarget.getTimeInMillis();
+        int datCount = Math.abs((int) ((startDate - target) / DateUtils.DAY_IN_MILLIS));
+
+        Logger.d("isInPerid",
                 "year:" + year
                         + "\nmonth:" + month
                         + "\nday:" + day
                         + "\nstart:" + calendarStart.getTime().toLocaleString()
+                        + "\ndatCount:" + datCount
         );
 
 
-        long target = calendarTarget.getTimeInMillis();
-        int datCount = Math.abs((int) ((startDate - target) / DateUtils.DAY_IN_MILLIS));
-        int currentMonth = datCount % (mUser.getCount() + mUser.getPeriod());
-        if (currentMonth < mUser.getCount()) {
+        int currentMonth = datCount % (count + mUser.getPeriod());
+        if (currentMonth < count) {
             return true;
         }
         return false;
