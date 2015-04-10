@@ -64,7 +64,9 @@ public class Day implements Comparable, Parcelable, Cloneable {
         stringBuilder.append(year)
                 .append("年")
                 .append(month < 10 ? ("0" + String.valueOf(month)) : month)
-                .append("月");
+                .append("月")
+                .append(monthDay < 10 ? ("0" + String.valueOf(monthDay)) : monthDay)
+                .append("日");
         return stringBuilder.toString();
     }
 

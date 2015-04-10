@@ -6,7 +6,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -58,8 +57,6 @@ public class BMIFragment extends Fragment {
     SeekBar bmiSeek;
     @InjectView(R.id.desc)
     TextView descTextView;
-    @InjectView(R.id.value)
-    TextView value;
 
     public BMIFragment() {
         // Required empty public constructor
@@ -85,14 +82,6 @@ public class BMIFragment extends Fragment {
         //这里用textwatch的话就不需要增加一个计算按钮了,用户体验比较好
         heightEditText.addTextChangedListener(new OnTextWatcher());
         weightEditText.addTextChangedListener(new OnTextWatcher());
-
-        bmiSeek.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                //禁止手指直接拖动,以免造成误解
-                return true;
-            }
-        });
     }
 
     class OnTextWatcher implements TextWatcher {
@@ -137,10 +126,7 @@ public class BMIFragment extends Fragment {
 
                 //体质指数（BMI）=体重（kg）÷身高^2（m）
                 float bmi = (float) weight / (float) Math.pow(((float) height / 100.0f), 2);
-                if (bmi < 0.1f) {
-                    //为了修正float除法的不精确性,且这里数据并不是一个精确计算
-                    bmi = 0.0f;
-                }
+                bmiSeek.setProgress(Float.valueOf(bmi).intValue());
                 String descValue = String.format("%.2f", bmi);
                 String desc = null;
                 //稍有标准判断不同,保证值在区间内
@@ -158,9 +144,6 @@ public class BMIFragment extends Fragment {
                 if (desc != null) {
                     descTextView.setText(descValue + " : " + desc);
                 }
-                //这里应该计算一个0-max值,原来18.5-40这么写的话是不对的,因为量程不对应
-                bmiSeek.setProgress(Float.valueOf(bmi).intValue());
-                value.setText(descValue);
             }
         } catch (Exception e) {
             descTextView.setVisibility(View.INVISIBLE);

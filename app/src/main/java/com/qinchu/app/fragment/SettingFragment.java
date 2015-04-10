@@ -168,7 +168,7 @@ public class SettingFragment extends BaseFragment {
         if (height != -1) {
             heightEditText.setText(String.valueOf(height));
         }
-        long startDate = Long.valueOf(UserProxy.getUser(SettingProxy.getUid()).getStartDate());
+        long startDate = SettingProxy.getStartDate();
         if (startDate != -1) {
             Date date = new Date();
             date.setTime(startDate);
@@ -197,7 +197,7 @@ public class SettingFragment extends BaseFragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            long startDate = Long.valueOf(UserProxy.getUser(SettingProxy.getUid()).getStartDate());
+            long startDate = SettingProxy.getStartDate();
             if (startDate != -1) {
                 Date date = new Date();
                 date.setTime(startDate);

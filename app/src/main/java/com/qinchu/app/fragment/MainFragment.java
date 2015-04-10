@@ -92,7 +92,7 @@ public class MainFragment extends BaseFragment {
         addGridView();
         gridView.setAdapter(mAdapter);
         mFlipper.addView(gridView, 0);
-        resetTitle(mAdapter.getShowMonth());
+        resetTitle(mAdapter.getSysDay());
     }
 
     /**
@@ -108,7 +108,6 @@ public class MainFragment extends BaseFragment {
         mFlipper.setOutAnimation(AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_out_left));
         mFlipper.showNext();
         mFlipper.removeViewAt(0);
-        resetTitle(mAdapter.getShowMonth());
     }
 
     /**
@@ -124,7 +123,6 @@ public class MainFragment extends BaseFragment {
         mFlipper.addView(gridView, mFlipper.getChildCount());
         mFlipper.showPrevious();
         mFlipper.removeViewAt(0);
-        resetTitle(mAdapter.getShowMonth());
     }
 
     private void addGridView() {

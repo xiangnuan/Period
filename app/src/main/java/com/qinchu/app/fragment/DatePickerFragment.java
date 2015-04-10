@@ -8,8 +8,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.DatePicker;
 
-import com.qinchu.app.db.UserProxy;
-import com.qinchu.app.entity.User;
 import com.qinchu.app.proxy.SettingProxy;
 
 import java.util.Calendar;
@@ -32,10 +30,7 @@ public class DatePickerFragment extends DialogFragment
     public void onDateSet(DatePicker view, int year, int month, int day) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month, day);
-        User user = UserProxy.getUser(SettingProxy.getUid());
-        user.setStartDate(String.valueOf(calendar.getTimeInMillis()));
-        UserProxy.saveUser(user);
-//        SettingProxy.saveStartDate(calendar.getTimeInMillis());
+        SettingProxy.saveStartDate(calendar.getTimeInMillis());
         Intent intent = new Intent();
         intent.setAction("com.qc.update.ui");
         LocalBroadcastManager.getInstance(this.getActivity()).sendBroadcast(intent);

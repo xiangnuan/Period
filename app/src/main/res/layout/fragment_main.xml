@@ -78,7 +78,7 @@
                 <ViewFlipper
                     android:id="@+id/calendar_flipper"
                     android:layout_width="match_parent"
-                    android:layout_height="228dip"
+                    android:layout_height="225dip"
                     android:layout_below="@id/week"
                     android:background="@color/white"
                     android:layout_gravity="center_horizontal" />
