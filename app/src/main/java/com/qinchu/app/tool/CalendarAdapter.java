@@ -2,19 +2,18 @@ package com.qinchu.app.tool;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.orhanobut.logger.Logger;
 import com.qinchu.app.R;
 import com.qinchu.app.entity.Day;
 import com.qinchu.app.proxy.PeriodProxy;
 
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.Calendar;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -29,55 +28,120 @@ public class CalendarAdapter extends BaseAdapter {
     private int lastDaysOfMonth = 0; // 上一个月的总天数
     private Day[] dayNumber = new Day[35]; // 一个gridview中的日期存入此数组中
     // 系统当前时间
-    private Day sysDay;
-    private Day showDay;
+    private Day sysDay = new Day();
+    private Day showDay = new Day();
     private int chooseColor = Color.parseColor("#FFA6D3");
     PeriodProxy periodProxy;
 
-    private CalendarExtend mCalendarExtend = CalendarExtend.getInstance(TimeZone.getTimeZone("GMT+5"), Locale.CHINA);
+    private CalendarExtend mCalendarExtend = CalendarExtend.getInstance();
 
     private CalendarAdapter(Context _context) {
         this.context = _context;
 
         periodProxy = PeriodProxy.newInstance();
 
-        Time time = new Time();
-        time.setToNow();
-        sysDay = new Day();
-        sysDay.year = time.year;
-        sysDay.month = time.month + 1;
-        sysDay.monthDay = time.monthDay;
+        sysDay.year = mCalendarExtend.get(Calendar.YEAR);
+        sysDay.month = mCalendarExtend.get(Calendar.MONTH);
+        sysDay.monthDay = mCalendarExtend.get(Calendar.DAY_OF_MONTH);
     }
 
-    public CalendarAdapter(Context _context, int jumpMonth, int year_c, int month_c) {
+    public CalendarAdapter(Context _context, int jumpMonth) {
         this(_context);
-        int stepYear;
-        int stepMonth = month_c + jumpMonth;
-        if (stepMonth > 0) {
-            // 往下一个月滑动
-            if (stepMonth % 12 == 0) {
-                stepYear = year_c + stepMonth / 12 - 1;
-                stepMonth = 12;
-            } else {
-                stepYear = year_c + stepMonth / 12;
-                stepMonth = stepMonth % 12;
-            }
-        } else if (stepMonth < 0) {
-            // 往上一个月滑动
-            stepYear = year_c - 1 + stepMonth / 12;
-            stepMonth = stepMonth % 12 + 12;
-        } else {
-            stepYear = year_c;
-        }
 
-        if (showDay == null) {
-            showDay = new Day();
+        int targetY = sysDay.year;
+        int targetM = sysDay.month + jumpMonth;
+
+        if (targetM > 0) {
+            // 往下一个月滑动,stepMonth=11,则是12月,是11几倍就是越过几年
+            targetY = sysDay.year + targetM / 12;
+            targetM = targetM % 12;
+        } else if (targetM < 0) {
+            // 往上一个月滑动
+            targetY = (sysDay.year-1) + targetM / 11;
+            targetM = 12 + targetM % 12;
         }
-        showDay.year = stepYear;
-        showDay.month = stepMonth;
+        showDay.year = targetY;
+        showDay.month = targetM;
         showDay.monthDay = sysDay.monthDay;
 
-        getCalendar(stepYear, stepMonth);
+        initDaysOfMonth(targetY, targetM);
+    }
+
+    /**
+     * 得到某年的某月的天数且这月的第一天是星期几
+     */
+    public void initDaysOfMonth(int year, int month) {
+        /**
+         * 某月的总天数
+         */
+        daysOfMonth = mCalendarExtend.getDaysOfMonth(year, month);
+        /**
+         * 某月第一天为星期几
+         */
+        dayOfWeek = mCalendarExtend.getWeekdayOfMonthFirstDay(year, month);
+        /**
+         * 上一个月的总天数
+         */
+        int lastM;
+        int lastY;
+        if (month == 0) {
+            lastM = 11;
+            lastY = year - 1;
+        } else {
+            lastM = month - 1;
+            lastY = year;
+        }
+        lastDaysOfMonth = mCalendarExtend.getDaysOfMonth(lastY, lastM);
+
+        Logger.e("daysOfMonth:" + daysOfMonth
+                        + "\nyear:" + year
+                        + "\nmonth:" + month
+                        + "\ndayOfWeek:" + dayOfWeek
+                        + "\nlastDaysOfMonth:" + lastDaysOfMonth
+        );
+
+        getWeek(year, month);
+    }
+
+    /**
+     * 将一个月中的每一天的值添加入数组dayNuber中
+     */
+
+    private void getWeek(int year, int month) {
+        for (int i = 0; i < dayNumber.length; i++) {
+            Day day = new Day();
+            if (i < 7 && dayOfWeek != 1) {
+                /**
+                 *  补上前一个月的最后几天
+                 */
+                day.monthDay = lastDaysOfMonth - (dayOfWeek - 2) + i;
+
+                if (month == 0) {
+                    day.year = year - 1;
+                    day.month = 11;
+                } else {
+                    day.year = year;
+                    day.month = month - 1;
+                }
+            } else if (i < (daysOfMonth + dayOfWeek)) { // 本月
+                day.monthDay = i;
+                day.month = month;
+                day.year = year;
+            } else {
+                /**
+                 * 下一个月
+                 */
+                day.monthDay = i % daysOfMonth;
+                if (month == 11) {
+                    day.year = year + 1;
+                    day.month = 0;
+                } else {
+                    day.year = year;
+                    day.month = month + 1;
+                }
+            }
+            dayNumber[i] = day;
+        }
     }
 
     @Override
@@ -115,8 +179,7 @@ public class CalendarAdapter extends BaseAdapter {
         holder.dayTV.setText(String.valueOf(itemDay.monthDay));
         if (position < daysOfMonth + dayOfWeek && position >= dayOfWeek) {
             //周日或者周六
-            //noinspection StatementWithEmptyBody
-            if (position % 7 == 0 || position % 7 == 6) {
+            if (position % 7 == 1 || position % 7 == 0) {
 
             }
             //今天
@@ -128,6 +191,7 @@ public class CalendarAdapter extends BaseAdapter {
         return convertView;
     }
 
+<<<<<<< HEAD
     // 得到某年的某月的天数且这月的第一天是星期几
     public void getCalendar(int year, int month) {
         daysOfMonth = mCalendarExtend.getDaysOfMonth(year, month); // 某月的总天数
@@ -177,6 +241,10 @@ public class CalendarAdapter extends BaseAdapter {
      */
     public Day getSysDay() {
         return sysDay;
+=======
+    public Day getShowMonth() {
+        return showDay;
+>>>>>>> origin/master
     }
 
     static class ViewHolder {

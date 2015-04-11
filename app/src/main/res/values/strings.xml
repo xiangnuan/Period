@@ -1,9 +1,8 @@
 <resources>
     <string name="app_name">QC-Period</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_logout">退出登录</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_bmi">BMIActivity</string>
     <string name="title_activity_login">LoginActivity</string>

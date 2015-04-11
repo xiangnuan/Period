@@ -12,13 +12,6 @@ public class SettingProxy {
 
     private static final String SETTINGNAME = "qc-setting";
     private static final String UID = "qc-uid";
-    private static final String AGE = "qc-age";
-    private static final String HEIGHT = "qc-height";
-    private static final String FIRSTAGE = "qc-first-age";
-    private static final String COUNT = "qc-count";
-    private static final String STARTDATE = "qc-start-date";
-    private static final String PERIOD = "qc-period";
-    private static final String WEIGHT = "qc-weight";
     private static SharedPreferences mSharedPreferences;
 
     private static SharedPreferences getSettingPreferences() {
@@ -46,63 +39,5 @@ public class SettingProxy {
 
     public static void saveUid(int uid) {
         save(UID, uid);
-    }
-
-    public static int getAge() {
-        return getSettingPreferences().getInt(AGE, -1);
-    }
-
-    public static void saveAge(int age) {
-        save(AGE, age);
-    }
-
-    public static int getHeight() {
-        return getSettingPreferences().getInt(HEIGHT, -1);
-    }
-
-    public static void saveHeight(int height) {
-        save(HEIGHT, height);
-    }
-
-    public static int getFirstAge() {
-        return getSettingPreferences().getInt(FIRSTAGE, -1);
-    }
-
-    public static void saveFirstAge(int firstAge) {
-        save(FIRSTAGE, firstAge);
-    }
-
-    public static int getCount() {
-        return getSettingPreferences().getInt(COUNT, -1);
-    }
-
-    public static void saveCount(int count) {
-        save(COUNT, count);
-    }
-
-    public static int getPeriod() {
-        return getSettingPreferences().getInt(PERIOD, -1);
-    }
-
-    public static void savePeriod(int period) {
-        save(PERIOD, period);
-    }
-
-    public static long getStartDate() {
-        return getSettingPreferences().getLong(STARTDATE, -1L);
-    }
-
-    public static void saveStartDate(long startDate) {
-        SharedPreferences.Editor edit = getSettingPreferences().edit();
-        edit.putLong(STARTDATE, startDate);
-        edit.apply();
-    }
-
-    public static int getWeight() {
-        return getSettingPreferences().getInt(WEIGHT, -1);
-    }
-
-    public static void saveWeight(int startDate) {
-        save(WEIGHT, startDate);
     }
 }

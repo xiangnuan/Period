@@ -46,41 +46,48 @@ public class CalendarExtend extends GregorianCalendar {
 
     /**
      * @param year
-     * @param month
+     * @param month [0...11]
      * @return
      */
 
     public int getDaysOfMonth(int year, int month) {
-        int daycount = 0;
+        int dayCount;
         switch (month) {
-            case 1:
-            case 3:
-            case 5:
-            case 7:
-            case 8:
-            case 10:
-            case 12:
-                daycount = 31;
-                break;
+            case 0:
+            case 2:
             case 4:
             case 6:
+            case 7:
             case 9:
             case 11:
-                daycount = 30;
+                dayCount = 31;
                 break;
-            case 2:
+            case 3:
+            case 5:
+            case 8:
+            case 10:
+                dayCount = 30;
+                break;
+            case 1:
                 if (isLeapYear(year)) {
-                    daycount = 29;
+                    dayCount = 29;
                 } else {
-                    daycount = 28;
+                    dayCount = 28;
                 }
+                break;
+            default:
+                dayCount = 0;
+                new IllegalArgumentException("month must in 0...11");
+                break;
 
         }
-        return daycount;
+        return dayCount;
     }
 
     /**
      * get the weekday by year-month
+     * 1...7  星期日...星期六
+     * SUNDAY.....SATURDAY
      *
      * @param year
      * @param month
@@ -88,7 +95,7 @@ public class CalendarExtend extends GregorianCalendar {
      */
     public int getWeekdayOfMonthFirstDay(int year, int month) {
         Calendar cal = Calendar.getInstance();
-        cal.set(year, month - 1, 1);
-        return cal.get(Calendar.DAY_OF_WEEK) - 1;
+        cal.set(year, month, 1);
+        return cal.get(Calendar.DAY_OF_WEEK);
     }
 }
